@@ -8,7 +8,7 @@ export default function Home() {
         <div>
           <div className="flex justify-center items-center w-full">
             <div className="relative overflow-hidden before:absolute before:top-0 before:left-0 before:w-1/5 before:h-full before:bg-inherit before:z-10 before:bg-gradient-to-r before:from-[#18121c] before:to-transparent after:absolute after:top-0 after:right-0 after:w-1/5 after:h-full after:bg-inherit after:z-10 after:bg-gradient-to-l after:from-[#18121c] after:to-transparent">
-              <Image src={background} alt="background" className="relative top-0 w-screen h-auto lg:w-auto lg:h-[85vh]" priority />
+              <Image src={background} alt="background" className="relative top-0 w-screen h-auto lg:w-auto lg:h-[85vh]" priority draggable="false" />
               <div className="absolute bottom-0 left-0 right-0 h-[10%] bg-gradient-to-b from-transparent to-[#18121c] z-10"></div>
             </div>
           </div>
