@@ -26,7 +26,7 @@ export default function Home() {
                 <ul>
                   <h2 className="text-[18px] my-4 animate-fadeIn animate-[fadeIn_2.5s]">We are building..</h2>
                   <li className="before:mr-2 before:content-hyphen before:animate-[fadeIn_2.5s]">
-                    <Link href="https://enrych.github.io/toppings-web" className="font-bold hover:underline animate-[fadeIn_3s]">Toppings:</Link>
+                    <Link href="https://enrych.github.io/toppings" className="font-bold hover:underline animate-[fadeIn_3s]">Toppings:</Link>
                     <span className="animate-[fadeIn_3s]"> a browser extension for your web, your way.</span>
                   </li>
                 </ul>
