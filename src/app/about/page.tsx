@@ -4,35 +4,31 @@ import { Prose } from "../../components/Shell";
 
 export const metadata: Metadata = {
   title: "About Enrych",
-  description: "Enrych is a one-person independent studio in Bengaluru making free tools and games: Initle, Toppings and Verse.",
+  description: "Enrych makes free tools and games that enrich everyday life: Initle, Toppings and Verse.",
 };
 
 export default function About() {
   return (
     <Prose>
       <h1>About Enrych</h1>
-      <p className="lead">
-        Enrych is a small, independent studio run by DV (@deemveem), a software engineer in Bengaluru, India. It&apos;s where side projects become things other
-        people can use.
-      </p>
+      <p className="lead">The name says the aim: to enrich everyday life. Not with big platforms, but with small things that make an ordinary moment better.</p>
 
-      <h2>How projects start</h2>
-      <p>Every Enrych project began as a small irritation:</p>
+      <h2>Where the work starts</h2>
+      <p>Every Enrych project begins with a small moment that could be better:</p>
       <ul>
         <li>
-          <strong>Toppings</strong> started with not knowing how long a YouTube course would actually take, and with YouTube&apos;s playback controls being just a bit too
-          coarse.
+          <strong>Toppings</strong>: not knowing how long a YouTube course will really take, and playback controls that are just a bit too coarse.
         </li>
         <li>
-          <strong>Verse</strong> started with music playing on a locked laptop and no way to glance at the lyrics.
+          <strong>Verse</strong>: music playing on a locked laptop, with no way to glance at the words.
         </li>
         <li>
-          <strong>Initle</strong> started with game nights where half the evening went into getting everyone to install the same app.
+          <strong>Initle</strong>: game nights where half the evening goes into getting everyone to install the same app.
         </li>
       </ul>
-      <p>The rule is simple: build things we&apos;d want to use ourselves, keep them free, and make them feel good to use.</p>
+      <p>Fix that moment well, make the fix free, and make it a pleasure to use. That&apos;s the whole method.</p>
 
-      <h2>What we care about</h2>
+      <h2>What Enrych stands for</h2>
       <ul>
         <li>
           <strong>Free to use.</strong> Initle may show a few ads in single-player mode to cover running costs; the tools themselves don&apos;t.

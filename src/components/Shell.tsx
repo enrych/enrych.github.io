@@ -26,7 +26,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
       </main>
       <footer className="mx-auto w-full max-w-[90rem] px-[clamp(1.25rem,4vw,3.5rem)] py-10">
         <div className="flex flex-wrap items-baseline justify-between gap-4 border-t border-haze/25 pt-6 font-serif text-[15px] text-haze">
-          <span>Enrych, Bengaluru, {new Date().getFullYear()}</span>
+          <span>Enrych, {new Date().getFullYear()}</span>
           <span className="flex gap-6">
             <Link href="/privacy" className="hover:text-starlight">Privacy</Link>
             <Link href="/contact" className="hover:text-starlight">Contact</Link>

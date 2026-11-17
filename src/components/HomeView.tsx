@@ -110,11 +110,11 @@ export function HomeView({ font }: { font: string }) {
 
       <section className="py-[18vh]">
         <p className="max-w-[30ch] font-serif text-[clamp(1.6rem,3.4vw,2.8rem)] leading-[1.2] text-starlight">
-          Enrych is one person in Bengaluru, turning small daily annoyances into small, finished things. Free to use, with the code in the open.
+          Enrych exists to enrich everyday life, one small, finished thing at a time. Everything is free to use, with the code in the open.
         </p>
         <p className="mt-8 font-serif text-lg text-dust">
           <Link className="link" href="/about">
-            About the studio
+            Why Enrych
           </Link>
           <span className="mx-3 text-haze/60">/</span>
           <a className="link" href="https://github.com/enrych" target="_blank" rel="noopener noreferrer">
