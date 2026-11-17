@@ -12,7 +12,7 @@ export default function About() {
     <Prose>
       <h1>About Enrych</h1>
       <p className="lead">
-        Enrych is a small, independent studio run by Divyaditya Singh Naruka, a software engineer in Bengaluru, India. It&apos;s where side projects become things other
+        Enrych is a small, independent studio run by DV (@deemveem), a software engineer in Bengaluru, India. It&apos;s where side projects become things other
         people can use.
       </p>
 
