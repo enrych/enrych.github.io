@@ -84,3 +84,11 @@ body {
 .prose-enrych th { color: #f3f1ea; font-weight: 500; }
 .prose-enrych code, .prose-enrych pre { font-family: ui-monospace, SFMono-Regular, monospace; font-size: 0.9em; }
 .prose-enrych pre { background: #181b3a; padding: 1rem 1.25rem; border-radius: 6px; color: #f3f1ea; }
+
+/* No visible scrollbar: scrolling is the flight, the page itself shows where you are. */
+html {
+  scrollbar-width: none;
+}
+html::-webkit-scrollbar {
+  display: none;
+}
