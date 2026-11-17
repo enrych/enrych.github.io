@@ -26,6 +26,10 @@ const config: Config = {
         quote: "'\u201C'",
       },
       keyframes: {
+        fall: {
+          "0%": { transform: "translateY(-100%)" },
+          "100%": { transform: "translateY(300%)" },
+        },
         fadeIn: {
           "0%": { opacity: "0" },
           "70%": { opacity: "0" },

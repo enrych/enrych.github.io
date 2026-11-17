@@ -100,14 +100,21 @@ export function HomeView({ font }: { font: string }) {
         ))}
 
         <div className="sticky top-0 h-[100svh]">
-          <div ref={(el) => (panels.current[0] = el)} className={panel}>
+          <div ref={(el) => (panels.current[0] = el)} className="absolute inset-0 will-change-transform">
             <h1 className="sr-only">Enrych</h1>
-            <div className="flex flex-wrap items-end justify-between gap-x-12 gap-y-5">
-              <p className="max-w-[16ch] font-serif text-[clamp(1.9rem,3.6vw,3.25rem)] font-light leading-[1.08] text-starlight">Make every day a little better.</p>
-              <button type="button" onClick={() => goTo(1)} className="font-serif text-base italic text-haze transition-colors hover:text-starlight">
-                Initle, Toppings and Verse
-              </button>
-            </div>
+            <p className="absolute inset-x-0 top-[47%] text-center font-serif text-[clamp(1.15rem,1.9vw,1.6rem)] font-light italic tracking-[0.01em] text-starlight/85 min-[960px]:top-[58%]">
+              Make every day a little better.
+            </p>
+            <button
+              type="button"
+              onClick={() => goTo(1)}
+              aria-label="Fly to the work"
+              className="group absolute bottom-[5vh] left-1/2 flex h-16 w-8 -translate-x-1/2 justify-center"
+            >
+              <span className="relative h-full w-px overflow-hidden bg-starlight/15">
+                <span className="absolute left-0 top-0 h-1/3 w-px animate-[fall_2.4s_cubic-bezier(.6,0,.3,1)_infinite] bg-gradient-to-b from-transparent to-starlight motion-reduce:animate-none" />
+              </span>
+            </button>
           </div>
 
           {WORK.map((w, i) => (

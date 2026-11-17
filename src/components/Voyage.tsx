@@ -46,19 +46,27 @@ const wordVertex = /* glsl */ `
     float z = max(0.2, -mv.z);
     // Cursor and click act on what you see, so work in the camera's view plane.
     vec2 v = mv.xy * (${DEPTH.toFixed(1)} / z);
+    float k = z / ${DEPTH.toFixed(1)};
+    // The cursor is a small gravity well: nearby stars curl around it and draw in a little.
     vec2 dm = v - uMouse;
-    float push = (1.0 - smoothstep(0.0, 0.9, length(dm))) * uMouseOn * t;
-    mv.xy += normalize(dm + 1e-4) * push * 0.35 * (z / ${DEPTH.toFixed(1)});
-    mv.z -= push * 0.8;
+    float well = (1.0 - smoothstep(0.0, 1.1, length(dm))) * uMouseOn * t;
+    well *= well * (3.0 - 2.0 * well);
+    float ang = well * 0.6;
+    vec2 curled = mat2(cos(ang), sin(ang), -sin(ang), cos(ang)) * dm * (1.0 - well * 0.18);
+    mv.xy += (curled - dm) * k;
+    // A click sends one ripple through the stars, like a stone dropped into dust.
     vec2 b = v - uBurst.xy;
-    mv.xy += normalize(b + 1e-4) * uBurst.z * 2.4 / (length(b) + 0.6) * t;
+    float age = uBurst.z;
+    float ring = exp(-pow((length(b) - age * 5.5) * 2.0, 2.0)) * exp(-age * 1.6);
+    mv.xy += normalize(b + 1e-4) * ring * 0.4 * k * t;
+    float lift = well * 0.9 + ring * 1.4;
 
     gl_Position = projectionMatrix * mv;
     gl_PointSize = aSize * uPixel * (115.0 / z);
     float twinkle = 0.65 + 0.35 * sin(uTime * 1.7 + aSeed * 60.0);
     float near = smoothstep(0.6, 3.5, -mv.z);
     float far = 1.0 - smoothstep(60.0, 110.0, -mv.z);
-    vAlpha = twinkle * mix(0.38, 0.95, t) * near * far;
+    vAlpha = twinkle * mix(0.38, 0.95, t) * near * far * (1.0 + lift);
   }
 `;
 
@@ -276,7 +284,7 @@ export function Voyage({
         uPixel: { value: pixel },
         uMouse: { value: new THREE.Vector2(99, 99) },
         uMouseOn: { value: 0 },
-        uBurst: { value: new THREE.Vector3(0, 0, 0) },
+        uBurst: { value: new THREE.Vector3(0, 0, 99) },
         uColor: { value: new THREE.Color("#F6EEDD") },
       },
       transparent: true,
@@ -284,6 +292,63 @@ export function Voyage({
       blending: THREE.AdditiveBlending,
     });
     scene.add(new THREE.Points(wordGeo, wordMat));
+
+    // ---------- Stardust that trails the cursor (in the camera's view, at the words' depth) ----------
+    const TRAIL = 220;
+    const trailGeo = new THREE.BufferGeometry();
+    const tPos = new Float32Array(TRAIL * 3);
+    const tVel = new Float32Array(TRAIL * 2);
+    const tBirth = new Float32Array(TRAIL).fill(-99);
+    const tSize = new Float32Array(TRAIL);
+    for (let i = 0; i < TRAIL; i++) tSize[i] = 1.6 + Math.random() * 2.2;
+    trailGeo.setAttribute("position", new THREE.BufferAttribute(tPos, 3));
+    trailGeo.setAttribute("aVel", new THREE.BufferAttribute(tVel, 2));
+    trailGeo.setAttribute("aBirth", new THREE.BufferAttribute(tBirth, 1));
+    trailGeo.setAttribute("aSize", new THREE.BufferAttribute(tSize, 1));
+    trailGeo.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 1e4);
+    const trailMat = new THREE.ShaderMaterial({
+      vertexShader: /* glsl */ `
+        uniform float uNow;
+        uniform float uPixel;
+        attribute vec2 aVel;
+        attribute float aBirth;
+        attribute float aSize;
+        varying float vAlpha;
+        void main() {
+          float age = uNow - aBirth;
+          float life = clamp(age / 1.6, 0.0, 1.0);
+          // Drifts outward, slows, and sinks a touch, like dust settling.
+          vec2 drift = aVel * (1.0 - exp(-age * 2.2)) / 2.2 + vec2(0.0, -0.05) * age * age;
+          vec4 mv = modelViewMatrix * vec4(position.xy + drift, position.z, 1.0);
+          gl_Position = projectionMatrix * mv;
+          gl_PointSize = aSize * uPixel * (115.0 / -mv.z) * (1.0 - life * 0.6);
+          vAlpha = age < 0.0 ? 0.0 : pow(1.0 - life, 1.6);
+        }
+      `,
+      fragmentShader: starFragment,
+      uniforms: { uNow: { value: 0 }, uPixel: { value: pixel }, uColor: { value: new THREE.Color("#FFE7C2") } },
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
+    const trail = new THREE.Points(trailGeo, trailMat);
+    trail.position.z = -DEPTH;
+    trail.frustumCulled = false;
+    camera.add(trail);
+    let trailHead = 0;
+    const emit = (x: number, y: number, vx: number, vy: number) => {
+      const i = trailHead;
+      trailHead = (trailHead + 1) % TRAIL;
+      tPos[i * 3] = x;
+      tPos[i * 3 + 1] = y;
+      tPos[i * 3 + 2] = (Math.random() - 0.5) * 0.3;
+      tVel[i * 2] = vx;
+      tVel[i * 2 + 1] = vy;
+      tBirth[i] = clockNow();
+      trailGeo.attributes.position!.needsUpdate = true;
+      trailGeo.attributes.aVel!.needsUpdate = true;
+      trailGeo.attributes.aBirth!.needsUpdate = true;
+    };
 
     let w = 1;
     let h = 1;
@@ -349,22 +414,40 @@ export function Voyage({
     const look = new THREE.Vector2(0, 0);
     let mouseOn = 0;
     let mouseTarget = 0;
-    let burst = 0;
+    const startedAt = performance.now();
+    const clockNow = () => (performance.now() - startedAt) / 1000;
+    let burstAt = -99;
+    const lastEmit = new THREE.Vector2(99, 99);
     const toView = (x: number, y: number) => {
       const { vw, vh } = view();
       return new THREE.Vector2((x / w - 0.5) * vw, -(y / h - 0.5) * vh);
     };
     const onMove = (e: PointerEvent) => {
       if (e.pointerType !== "mouse") return;
-      mouse.copy(toView(e.clientX, e.clientY));
+      const p = toView(e.clientX, e.clientY);
+      mouse.copy(p);
       mouseTarget = 1;
+      // Shed a grain of dust for every bit of distance travelled, so fast moves leave longer trails.
+      const dist = p.distanceTo(lastEmit);
+      if (dist > 2) lastEmit.copy(p);
+      const steps = Math.min(6, Math.floor(dist / 0.07));
+      for (let s = 1; s <= steps; s++) {
+        const q = lastEmit.clone().lerp(p, s / steps);
+        emit(q.x, q.y, (Math.random() - 0.5) * 0.25, (Math.random() - 0.5) * 0.25);
+      }
+      if (steps) lastEmit.copy(p);
     };
     const onLeave = () => (mouseTarget = 0);
     const onDown = (e: PointerEvent) => {
       if ((e.target as Element | null)?.closest?.("a,button,input,textarea,select")) return;
       const p = toView(e.clientX, e.clientY);
-      wordMat.uniforms.uBurst!.value.set(p.x, p.y, 1);
-      burst = 1;
+      wordMat.uniforms.uBurst!.value.set(p.x, p.y, 0);
+      burstAt = clockNow();
+      for (let s = 0; s < 40; s++) {
+        const a = (s / 40) * Math.PI * 2 + Math.random() * 0.2;
+        const sp = 0.6 + Math.random() * 0.9;
+        emit(p.x, p.y, Math.cos(a) * sp, Math.sin(a) * sp);
+      }
     };
 
     function resize() {
@@ -401,8 +484,9 @@ export function Voyage({
       mouseOn += (mouseTarget - mouseOn) * 0.08;
       wordMat.uniforms.uMouseOn!.value = mouseOn;
       (wordMat.uniforms.uMouse!.value as THREE.Vector2).lerp(mouse, 0.18);
-      burst *= 0.92;
-      wordMat.uniforms.uBurst!.value.z = burst;
+      const nowS = clockNow();
+      wordMat.uniforms.uBurst!.value.z = Math.min(99, nowS - burstAt);
+      trailMat.uniforms.uNow!.value = nowS;
 
       // Glide towards the scrolled position.
       pos += (progress.current - pos) * (reduced ? 1 : 0.075);
@@ -446,6 +530,8 @@ export function Voyage({
       fieldGeo.dispose();
       galGeo.dispose();
       wordGeo.dispose();
+      trailGeo.dispose();
+      trailMat.dispose();
       fieldMat.dispose();
       galMat.dispose();
       farGalMat.dispose();
