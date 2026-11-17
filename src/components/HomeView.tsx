@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Constellation, type Frame } from "./Constellation";
+import { Galaxy, type Frame } from "./Galaxy";
 
 const WORK = [
   {
@@ -30,7 +30,7 @@ const WORK = [
 
 const HERO: Frame = { cx: 0.5, cy: 0.46, width: 0.8 };
 const HERO_NARROW: Frame = { cx: 0.5, cy: 0.4, width: 0.9 };
-const SIDE: Frame = { cx: 0.74, cy: 0.5, width: 0.4 };
+const SIDE: Frame = { cx: 0.77, cy: 0.5, width: 0.35 };
 
 export function HomeView({ font }: { font: string }) {
   const [hovered, setHovered] = useState<string | null>(null);
@@ -38,6 +38,7 @@ export function HomeView({ font }: { font: string }) {
   const [inHero, setInHero] = useState(true);
   const [wide, setWide] = useState(true);
   const heroRef = useRef<HTMLElement>(null);
+  const scroll = useRef(0);
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 900px) and (hover: hover)");
@@ -46,7 +47,10 @@ export function HomeView({ font }: { font: string }) {
     mq.addEventListener("change", update);
     const io = new IntersectionObserver(([e]) => setInHero(!!e && e.intersectionRatio > 0.35), { threshold: [0, 0.35, 1] });
     if (heroRef.current) io.observe(heroRef.current);
+    const onScroll = () => (scroll.current = window.scrollY);
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
+      window.removeEventListener("scroll", onScroll);
       mq.removeEventListener("change", update);
       io.disconnect();
     };
@@ -60,7 +64,7 @@ export function HomeView({ font }: { font: string }) {
 
   return (
     <>
-      <Constellation word={word} font={font} frame={frame} className="fixed inset-0 -z-10 h-[100lvh] w-full" />
+      <Galaxy word={word} font={font} frame={frame} scrollRef={scroll} className="fixed inset-0 -z-10 h-[100lvh] w-full" />
 
       <section ref={heroRef} className="relative -mt-[var(--nav)] flex h-[100svh] min-h-[520px] items-end pb-[9vh]">
         <h1 className="sr-only">Enrych</h1>

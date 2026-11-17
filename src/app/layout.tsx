@@ -4,6 +4,8 @@ import "@fontsource-variable/newsreader/opsz.css";
 import "@fontsource-variable/newsreader/opsz-italic.css";
 import { leixo } from "../lib/fonts";
 import { Shell } from "../components/Shell";
+import { SmoothScroll } from "../components/SmoothScroll";
+import "lenis/dist/lenis.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -19,6 +21,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en">
       <body className={`${leixo.variable} bg-night font-serif text-dust antialiased`}>
+        <SmoothScroll />
         <Shell>{children}</Shell>
       </body>
     </html>
