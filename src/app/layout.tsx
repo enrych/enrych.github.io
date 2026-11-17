@@ -6,6 +6,8 @@ export const metadata: Metadata = {
   title: "Enrych",
   description:
     "We're all about making tools and products that help people out and add a bit of fun to life. We build stuff we’d love to use ourselves, aiming to make your day a little easier and a lot more enjoyable.",
+  // Google AdSense site ownership (covers subdomains such as initle.enry.ch).
+  other: { "google-adsense-account": "ca-pub-4399872503638784" },
 };
 
 export default function RootLayout({
