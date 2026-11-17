@@ -20,10 +20,6 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <head>
-        {/* Google AdSense (Auto ads) */}
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4399872503638784" crossOrigin="anonymous" />
-      </head>
       <body className={`${leixo.variable} bg-night font-serif text-dust antialiased`}>
         <SmoothScroll />
         <Shell>{children}</Shell>
